@@ -1,0 +1,112 @@
+2) Find if a word can be formed by two words in a dictionary. For example, find that "newspaper" can be made by "news" and "paper." Write an effective program to do this assuming you have an array of words as a dictionary in ascending order
+
+#include<bits/stdc++.h>
+using namespace std;
+ 
+#define char_int(c) ((int)c - (int)'a')
+ 
+// Alphabet size
+#define SIZE (26)
+ 
+//  Node
+struct Node
+{
+    Node *children[SIZE];
+ 
+    bool isLeaf;
+};
+ 
+// Returns new node (initialized to NULLs)
+Node *getNode()
+{
+    Node * newNode = new Node;
+    newNode->isLeaf = false;
+    for (int i =0 ; i< SIZE ; i++)
+        newNode->children[i] = NULL;
+    return newNode;
+}
+ 
+
+void insert(Node *root, string Key)
+{
+    int n = Key.length();
+    Node * pCrawl = root;
+ 
+    for (int i=0; i<n; i++)
+    {
+        int index = char_int(Key[i]);
+ 
+        if (pCrawl->children[index] == NULL)
+            pCrawl->children[index] = getNode();
+ 
+        pCrawl = pCrawl->children[index];
+    }
+ 
+    // make last node as leaf node
+    pCrawl->isLeaf = true;
+}
+ 
+
+int findPrefix(struct Node *root, string key)
+{
+    int pos = -1, level;
+    struct Node *pCrawl = root;
+ 
+    for (level = 0; level < key.length(); level++)
+    {
+        int index = char_int(key[level]);
+        if (pCrawl->isLeaf == true)
+            pos = level;
+        if (!pCrawl->children[index])
+            return pos;
+ 
+        pCrawl = pCrawl->children[index];
+    }
+    if (pCrawl != NULL && pCrawl->isLeaf)
+        return level;
+}
+ 
+
+bool isPossible(struct Node* root, string word)
+{
+   
+    int len = findPrefix(root, word);
+ 
+   
+  
+    if (len == -1)
+        return false;
+ 
+   
+    string split_word(word, len, word.length()-(len));
+    int split_len = findPrefix(root, split_word);
+ 
+    
+    return (len + split_len == word.length());
+}
+ 
+
+int main()
+{
+    // Let the given dictionary be following
+    vector<string> dictionary = {"news", "for",
+                                    "paper", "sale"};
+ 
+    string word = "newspaper"; //word to be formed
+ 
+    // root Node of 
+    Node *root = getNode();
+ 
+   
+    for (int i=0; i<dictionary.size(); i++)
+        insert(root, dictionary[i]);
+ 
+    isPossible(root, word) ? cout << "Word Found":
+                             cout << "Not found";
+ 
+    return 0;
+}
+
+
+
+
